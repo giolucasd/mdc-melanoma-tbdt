@@ -10,6 +10,7 @@ Final project for Mineração de Dados Complexos course.
 - [1. Prerequisites](#1-prerequisites)
 - [2. Installing `mdc-melanoma-tbdt`](#2-installing-mdc-melanoma-tbdt)
 - [3. Using `mdc-melanoma-tbdt`](#3-using-mdc-melanoma-tbdt)
+  - [3.1. Downloading the data](#31-downloading-the-data)
 
 ## 1. Prerequisites
 
@@ -46,8 +47,19 @@ source .venv/bin/activate
 
 ## 3. Using `mdc-melanoma-tbdt`
 
-Be sure you are in the root directory and download the dataset:
+### 3.1. Downloading the data
+
+First, be sure you are in the root directory.
+
+Then go to your kaggle account, access your profile, settings and generate an API token.
+Copy the token export command, paste it in your terminal to login into kaggle.
+
+Now, go to the competition page (https://www.kaggle.com/competitions/classificacao-de-melanoma) and join the conpetition.
+
+Finally, download the dataset into the expected structure with:
 
 ```bash
 ./scripts/download_data.sh
 ```
+
+This script will automatically download the zip file into the "data/" directory, extract it and clean the temporary files generated.
