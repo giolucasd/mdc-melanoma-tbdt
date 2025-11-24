@@ -3,12 +3,16 @@ from __future__ import annotations
 from pathlib import Path
 from typing import Tuple
 
+import numpy as np
 import pandas as pd
 from PIL import Image
 from torch.utils.data import DataLoader, Dataset
 from torchvision import transforms
 
 DATA_PATH = Path(__file__).parent.parent / "data"
+
+IMAGENET_MEAN = np.array([0.485, 0.456, 0.406])
+IMAGENET_STD = np.array([0.229, 0.224, 0.225])
 
 
 class MelanomaDataset(Dataset):
@@ -68,7 +72,7 @@ def get_train_test_transforms():
             transforms.RandomHorizontalFlip(),
             transforms.ColorJitter(0.2, 0.2, 0.2, 0.1),
             transforms.ToTensor(),
-            transforms.Normalize(mean=[0.485, 0.456, 0.406], std=[0.229, 0.224, 0.225]),
+            transforms.Normalize(mean=IMAGENET_MEAN, std=IMAGENET_STD),
         ]
     )
 
@@ -76,7 +80,7 @@ def get_train_test_transforms():
         [
             transforms.Resize((224, 224)),
             transforms.ToTensor(),
-            transforms.Normalize(mean=[0.485, 0.456, 0.406], std=[0.229, 0.224, 0.225]),
+            transforms.Normalize(mean=IMAGENET_MEAN, std=IMAGENET_STD),
         ]
     )
 
