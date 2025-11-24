@@ -32,6 +32,7 @@ class MelanomaDataset(Dataset):
     ):
         self.df = df.reset_index(drop=True)
         self.root_dir = Path(root_dir)
+        self.images_dir = self.root_dir / "images"
         self.transform = transform
 
         self.path_column = path_column
@@ -45,7 +46,7 @@ class MelanomaDataset(Dataset):
     def __getitem__(self, idx):
         row = self.df.iloc[idx]
 
-        img_path = self.root_dir / row[self.path_column]
+        img_path = self.images_dir / row[self.path_column]
         label = int(row[self.target_column])
 
         img = Image.open(img_path).convert("RGB")
