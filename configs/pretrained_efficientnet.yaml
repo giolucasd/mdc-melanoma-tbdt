@@ -1,5 +1,6 @@
 model:
-  name: baseline_cnn
+  name: efficientnet_b0
+  pretrained: true
 
 training:
   learning_rate: 0.001

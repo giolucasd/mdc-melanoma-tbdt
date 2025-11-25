@@ -54,7 +54,7 @@ class MelanomaLitModule(pl.LightningModule):
 
         bal_acc = balanced_accuracy_score(targets, preds)
 
-        self.log("train_balanced_accuracy", bal_acc, prog_bar=True)
+        self.log("train_bal_acc", bal_acc, prog_bar=True)
 
         self.train_preds.clear()
         self.train_targets.clear()
@@ -76,7 +76,7 @@ class MelanomaLitModule(pl.LightningModule):
         targets = torch.cat(self.val_targets).numpy()
 
         bal_acc = balanced_accuracy_score(targets, preds)
-        self.log("val_balanced_accuracy", bal_acc, prog_bar=True)
+        self.log("val_bal_acc", bal_acc, prog_bar=True)
 
         self.val_preds.clear()
         self.val_targets.clear()

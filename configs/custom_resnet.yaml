@@ -1,0 +1,16 @@
+model:
+  name: custom_resnet
+  stem_kernel_size: 5
+  stem_out: 32
+  block_channels: [32, 64, 128, 256]
+  blocks_per_stage: [2, 2, 2, 1]
+
+training:
+  learning_rate: 0.001
+  weight_decay: 0.0001
+  warmup_epochs: 5
+  max_epochs: 50
+
+data:
+  batch_size: 128
+  num_workers: 4

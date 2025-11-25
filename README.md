@@ -5,7 +5,7 @@
 ![GitHub stars](https://img.shields.io/github/stars/giolucasd/mdc-melanoma-tbdt?style=social)
 ![GitHub forks](https://img.shields.io/github/forks/giolucasd/mdc-melanoma-tbdt?style=social)
 
-Final project for Mineração de Dados Complexos course.
+Final project for Mineração de Dados Complexos course from group The Big Data Theory.
 
 - [1. Prerequisites](#1-prerequisites)
 - [2. Installing `mdc-melanoma-tbdt`](#2-installing-mdc-melanoma-tbdt)

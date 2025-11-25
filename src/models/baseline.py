@@ -1,14 +1,17 @@
 import torch
 import torch.nn as nn
 
+from src.models.base import BaseModel
 from src.models.blocks import ConvBlock
 
 
-class MelanomaBaselineCNN(nn.Module):
+class MelanomaBaselineCNN(BaseModel):
     """A reasonable baseline CNN for ISIC binary classification."""
 
-    def __init__(self, num_classes=1):
+    def __init__(self, config: dict = None):
         super().__init__()
+
+        number_of_classes = config.get("num_classes", 1)
 
         self.features = nn.Sequential(
             ConvBlock(in_channels=3, out_channels=32, kernel_size=5),
@@ -23,7 +26,7 @@ class MelanomaBaselineCNN(nn.Module):
         self.classifier = nn.Sequential(
             nn.Linear(256, 128),
             nn.GELU(),
-            nn.Linear(128, num_classes),
+            nn.Linear(128, number_of_classes),
         )
 
     def forward(self, x):

@@ -10,7 +10,7 @@ from pytorch_lightning.loggers import TensorBoardLogger
 
 from scripts.utils import setup_reproducibility, shut_down_warnings
 from src.data import get_train_val_dataloaders
-from src.models.baseline import MelanomaBaselineCNN
+from src.models.utils import build_model_from_config, load_model_weights
 from src.training import MelanomaLitModule
 
 setup_reproducibility(seed=27)
@@ -44,6 +44,7 @@ def main():
 
     training_cfg = config.get("training", {})
     data_cfg = config.get("data", {})
+    model_cfg = config.get("model", {})
 
     # ----------------------------------------------------
     # Prepare output directory
@@ -64,7 +65,8 @@ def main():
     # ----------------------------------------------------
     # Model + Lightning module
     # ----------------------------------------------------
-    model = MelanomaBaselineCNN(num_classes=1)
+    model = build_model_from_config(model_cfg)
+    model = load_model_weights(model, model_cfg)
     lit_model = MelanomaLitModule(model, training_cfg)
 
     # ----------------------------------------------------
