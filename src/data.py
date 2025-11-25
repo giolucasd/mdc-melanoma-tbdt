@@ -61,7 +61,8 @@ def get_train_test_transforms():
     """
     Get transforms for train and test.
 
-    In train images,we explore data augmentation strategies.
+    In train images, we explore data augmentation strategies.
+    The augmentations are though to match the ISIC dataset characteristics.
     In test and validation images we only resize and normalize.
 
     Normalization is conducted according to ImageNet statistics.
@@ -69,11 +70,30 @@ def get_train_test_transforms():
     """
     train_transforms = transforms.Compose(
         [
-            transforms.RandomResizedCrop(224),
+            transforms.RandomResizedCrop(
+                224,
+                scale=(0.80, 1.0),
+                ratio=(0.9, 1.1),
+            ),
             transforms.RandomHorizontalFlip(),
-            transforms.ColorJitter(0.2, 0.2, 0.2, 0.1),
+            transforms.RandomVerticalFlip(),
+            transforms.RandomRotation(degrees=20),
+            transforms.RandomAffine(
+                degrees=0,
+                translate=(0.05, 0.05),
+                scale=(0.95, 1.05),
+                shear=5,
+            ),
+            # Mild color changes (ISIC-safe)
+            transforms.ColorJitter(
+                brightness=0.1,
+                contrast=0.1,
+                saturation=0.05,
+                hue=0.02,
+            ),
             transforms.ToTensor(),
             transforms.Normalize(mean=IMAGENET_MEAN, std=IMAGENET_STD),
+            transforms.RandomErasing(p=0.25, scale=(0.02, 0.10), ratio=(0.3, 3.3)),
         ]
     )
 

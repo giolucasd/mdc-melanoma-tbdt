@@ -11,6 +11,7 @@ Final project for Mineração de Dados Complexos course.
 - [2. Installing `mdc-melanoma-tbdt`](#2-installing-mdc-melanoma-tbdt)
 - [3. Using `mdc-melanoma-tbdt`](#3-using-mdc-melanoma-tbdt)
   - [3.1. Downloading the data](#31-downloading-the-data)
+  - [3.2. Training baseline](#32-training-baseline)
 
 ## 1. Prerequisites
 
@@ -63,3 +64,43 @@ Finally, download the dataset into the expected structure with:
 ```
 
 This script will automatically download the zip file into the "data/" directory, extract it and clean the temporary files generated.
+
+### 3.2. Training baseline
+
+After downloading the data, you can train the baseline CNN using the CLI script provided in `scripts/baseline_train`.
+
+This script wraps the full training pipeline:
+- setup reproducibility and deterministic behavior
+- loads a YAML configuration (configs/*.yaml)
+- builds the baseline CNN (src.models.baseline)
+- instantiates the LightningModule (src.training)
+- configures TensorBoard logging
+- saves checkpoints and training logs
+- stores a copy of the config in the output directory for reproducibility
+
+> NOTE: other scripts will also do that, but we won't keep repeting it.
+
+```bash
+python -m scripts.baseline_train \
+  --config configs/baseline.yaml \
+  --output-suffix baseline_v1
+```
+
+This will generate an output directory:
+
+```bash
+outputs/baseline_v1/
+│
+├── config.yaml               # copy of the config used
+├── best.ckpt                 # best checkpoint (monitored by val_loss)
+├── last.ckpt                 # last checkpoint
+└── tensorboard/              # TensorBoard logs
+```
+
+To launch TensorBoard to monitor losses and balanced accuracy:
+
+```bash
+tensorboard --logdir outputs/baseline_v1/tensorboard
+```
+
+Note that you can create multiple config files and reuse the same CLI. This will be even more helpful when using configurable models.
