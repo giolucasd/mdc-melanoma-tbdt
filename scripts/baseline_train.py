@@ -5,7 +5,7 @@ from pathlib import Path
 import torch
 import yaml
 from pytorch_lightning import Trainer
-from pytorch_lightning.callbacks import LearningRateMonitor, ModelCheckpoint
+from pytorch_lightning.callbacks import ModelCheckpoint
 from pytorch_lightning.loggers import TensorBoardLogger
 
 from scripts.utils import setup_reproducibility, shut_down_warnings
@@ -87,8 +87,6 @@ def main():
         every_n_epochs=1,
     )
 
-    lr_monitor = LearningRateMonitor(logging_interval="epoch")
-
     # ----------------------------------------------------
     # Train
     # ----------------------------------------------------
@@ -96,7 +94,7 @@ def main():
         max_epochs=training_cfg["max_epochs"],
         accelerator="auto",
         devices=1,
-        callbacks=[ckpt_best, ckpt_last, lr_monitor],
+        callbacks=[ckpt_best, ckpt_last],
         logger=logger,
         precision="bf16-mixed" if torch.cuda.is_available() else "32-true",
         gradient_clip_val=1.0,
