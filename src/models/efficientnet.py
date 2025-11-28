@@ -8,7 +8,7 @@ class EfficientNetWrapper(BaseModel):
     """Wraps torchvision EfficientNet and replaces the classifier head with a 1-logit output."""
 
     def __init__(self, config: dict = None):
-        super().__init__()
+        super().__init__(config)
 
         model_name = config.get("model_name", "efficientnet_b0")
         pretrained = config.get("pretrained", True)

@@ -16,7 +16,7 @@ class CustomResNet(BaseModel):
         self,
         config: dict = None,
     ):
-        super().__init__()
+        super().__init__(config)
         stem_out = config.get("stem_out", 32)
         stem_kernel_size = config.get("stem_kernel_size", 7)
         block_channels = config.get("block_channels", (32, 64, 128, 256))

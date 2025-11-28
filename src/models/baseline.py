@@ -9,7 +9,7 @@ class MelanomaBaselineCNN(BaseModel):
     """A reasonable baseline CNN for ISIC binary classification."""
 
     def __init__(self, config: dict = None):
-        super().__init__()
+        super().__init__(config)
 
         number_of_classes = config.get("num_classes", 1)
 
