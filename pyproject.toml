@@ -16,16 +16,3 @@ dependencies = [
     "torch>=2.9.1",
     "torchvision>=0.24.1",
 ]
-
-[tool.uv.workspace]
-members = [
-    ".",
-]
-
-[tool.uv.sources]
-mdc-melanoma-tbdt = { workspace = true, editable = true }
-
-[dependency-groups]
-dev = [
-    "mdc-melanoma-tbdt",
-]
