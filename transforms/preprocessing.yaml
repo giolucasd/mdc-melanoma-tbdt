@@ -1,6 +1,5 @@
 crop:
   enabled: true
-  size: 224
   scale: [0.80, 1.0]
   ratio: [0.9, 1.1]
 
