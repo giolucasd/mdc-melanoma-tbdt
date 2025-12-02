@@ -12,6 +12,6 @@ training:
   fbeta_beta: 2
 
 data:
-  aug_cfg_path: ./configs/aug.yaml
+  aug_cfg_path: ./transforms/preprocessing.yaml
   batch_size: 128
   num_workers: 4
