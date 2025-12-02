@@ -1,0 +1,71 @@
+# Baseline CNN Configuration - Pure (No Augmentation)
+# SimpleCNN trained on original data only (no augmentation)
+# All hyperparameters centralized here for reproducibility
+
+model:
+  name: SimpleCNN
+  type: baseline_cnn_no_augmentation
+
+training:
+  # Data loading
+  batch_size: 64  # Number of images processed together in each training step
+  num_workers: 6  # Increased for faster data loading
+  
+  # Training schedule
+  warmup_epochs: 5
+  max_epochs: 30
+  
+  # Optimization
+  learning_rate: 0.01
+  
+  # Loss function
+  loss:
+    type: BCEWithLogitsLoss
+    pos_weight: auto  # automatically computed from training set (neg/pos ratio)
+  
+  # Optimizer
+  optimizer:
+    type: Adam
+    lr: 0.01
+    betas: [0.9, 0.999]
+    eps: 1.0e-08
+    weight_decay: 0
+  
+  # Learning rate scheduler
+  scheduler:
+    type: StepLR
+    step_size: 3
+    gamma: 0.1
+
+data:
+  root_dir: data
+  train_csv: data/train.csv
+  val_csv: data/val.csv
+  image_size: 224
+  
+  # Data augmentation: NONE for this pure baseline
+  # Only basic preprocessing (resize, normalize)
+  augmentation:
+    train:
+      - Resize: 256
+      - CenterCrop: 224
+      - Normalize:
+          mean: [0.485, 0.456, 0.406]
+          std: [0.229, 0.224, 0.225]
+    
+    val:
+      - Resize: 256
+      - CenterCrop: 224
+      - Normalize:
+          mean: [0.485, 0.456, 0.406]
+          std: [0.229, 0.224, 0.225]
+
+logging:
+  tensorboard: true
+  save_checkpoints: true
+  log_every_n_steps: 10
+
+output:
+  checkpoint_dir: outputs
+  best_checkpoint: best.ckpt
+  last_checkpoint: last.ckpt

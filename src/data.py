@@ -32,11 +32,15 @@ class MelanomaDataset(Dataset):
     ):
         self.df = df.reset_index(drop=True)
         self.root_dir = Path(root_dir)
-        self.images_dir = self.root_dir / "images"
-        self.transform = transform
-
         self.path_column = path_column
         self.target_column = target_column
+        self.images_dir = self.root_dir / "images"
+
+        # Corrige caso o caminho tenha duplicidade de 'images/images'
+        # Se já existe 'data/images/train', não adiciona mais um 'images'
+        if not (self.images_dir / self.df[self.path_column].iloc[0]).exists():
+            self.images_dir = self.root_dir
+        self.transform = transform
 
         assert pd.api.types.is_integer_dtype(self.df[self.target_column])
 
