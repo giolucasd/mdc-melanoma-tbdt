@@ -101,6 +101,7 @@ def main():
         precision="bf16-mixed" if torch.cuda.is_available() else "32-true",
         gradient_clip_val=1.0,
         gradient_clip_algorithm="norm",
+        accumulate_grad_batches=training_cfg["grad_accum"],
     )
 
     trainer.fit(lit_model, train_loader, val_loader)
