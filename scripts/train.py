@@ -46,6 +46,13 @@ def main():
     data_cfg = config.get("data", {})
     model_cfg = config.get("model", {})
 
+    aug_cfg_path = data_cfg.get("aug_cfg_path", None)
+    if aug_cfg_path is not None:
+        aug_cfg_path = Path(aug_cfg_path)
+        aug_cfg = load_config(aug_cfg_path)
+    else:
+        aug_cfg = {}
+
     # ----------------------------------------------------
     # Prepare output directory
     # ----------------------------------------------------
@@ -58,6 +65,7 @@ def main():
     # Data
     # ----------------------------------------------------
     train_loader, val_loader = get_train_val_dataloaders(
+        aug_cfg=aug_cfg,
         batch_size=data_cfg.get("batch_size", 256),
         num_workers=data_cfg.get("num_workers", 4),
     )
@@ -101,6 +109,7 @@ def main():
         precision="bf16-mixed" if torch.cuda.is_available() else "32-true",
         gradient_clip_val=1.0,
         gradient_clip_algorithm="norm",
+        accumulate_grad_batches=training_cfg["grad_accum"],
     )
 
     trainer.fit(lit_model, train_loader, val_loader)
