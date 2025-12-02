@@ -33,7 +33,13 @@ class MelanomaLitModule(pl.LightningModule):
         self.model = model
         self.save_hyperparameters(config)
 
-        self.loss_fn = nn.BCEWithLogitsLoss()
+        if config.get("loss_fn") == "BCEWithLogitsLoss":
+            self.loss_fn = nn.BCEWithLogitsLoss(
+                pos_weight=torch.tensor([config.get("pos_weight", 1.0)]))
+        elif config.get("loss_fn") == "FocalLoss":
+            raise NotImplementedError("FocalLoss not implemented yet.")
+        else:
+            raise ValueError(f"Unsupported loss function: {config.get('loss_fn')}")
 
         self.train_preds = []
         self.train_targets = []

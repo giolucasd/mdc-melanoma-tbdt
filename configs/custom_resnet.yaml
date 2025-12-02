@@ -6,6 +6,8 @@ model:
   blocks_per_stage: [2, 2, 2, 1]
 
 training:
+  loss_fn: BCEWithLogitsLoss
+  pos_weight: 2.0
   learning_rate: 0.001
   weight_decay: 0.0001
   warmup_epochs: 5
