@@ -57,7 +57,86 @@ class MelanomaDataset(Dataset):
         return img, label
 
 
-def get_train_test_transforms():
+def build_transforms(cfg):
+    aug_list = []
+
+    # --- CROP ---
+    crop_cfg = cfg.get("crop", {})
+    if crop_cfg.get("enabled", False):
+        aug_list.append(
+            transforms.RandomResizedCrop(
+                crop_cfg.get("size", 224),
+                scale=tuple(crop_cfg.get("scale", [0.8, 1.0])),
+                ratio=tuple(crop_cfg.get("ratio", [0.9, 1.1])),
+            )
+        )
+
+    # --- FLIP ---
+    flip_cfg = cfg.get("flip", {})
+    if flip_cfg.get("enabled", False):
+        if flip_cfg.get("horizontal", True):
+            aug_list.append(transforms.RandomHorizontalFlip())
+        if flip_cfg.get("vertical", False):
+            aug_list.append(transforms.RandomVerticalFlip())
+
+    # --- ROTATE ---
+    rot_cfg = cfg.get("rotate", {})
+    if rot_cfg.get("enabled", False):
+        aug_list.append(
+            transforms.RandomRotation(rot_cfg.get("degrees", 20))
+        )
+
+    # --- AFFINE ---
+    aff_cfg = cfg.get("affine", {})
+    if aff_cfg.get("enabled", False):
+        aug_list.append(
+            transforms.RandomAffine(
+                degrees=aff_cfg.get("degrees", 0),
+                translate=tuple(aff_cfg.get("translate", [0.05, 0.05])),
+                scale=tuple(aff_cfg.get("scale", [0.95, 1.05])),
+                shear=aff_cfg.get("shear", 5),
+            )
+        )
+
+    # --- COLOR ---
+    col_cfg = cfg.get("color", {})
+    if col_cfg.get("enabled", False):
+        aug_list.append(
+            transforms.ColorJitter(
+                brightness=col_cfg.get("brightness", 0.1),
+                contrast=col_cfg.get("contrast", 0.1),
+                saturation=col_cfg.get("saturation", 0.05),
+                hue=col_cfg.get("hue", 0.02),
+            )
+        )
+
+    # Always convert to tensor
+    aug_list.append(transforms.ToTensor())
+
+    # --- NORMALIZE ---
+    norm_cfg = cfg.get("normalize", {})
+    aug_list.append(
+        transforms.Normalize(
+            mean=norm_cfg.get("mean", IMAGENET_MEAN),
+            std=norm_cfg.get("std", IMAGENET_STD),
+        )
+    )
+
+    # --- CUTOUT ---
+    cut_cfg = cfg.get("cutout", {})
+    if cut_cfg.get("enabled", False):
+        aug_list.append(
+            transforms.RandomErasing(
+                p=cut_cfg.get("p", 0.25),
+                scale=tuple(cut_cfg.get("scale", [0.02, 0.10])),
+                ratio=tuple(cut_cfg.get("ratio", [0.3, 3.3])),
+            )
+        )
+
+    return transforms.Compose(aug_list)
+
+
+def get_train_test_transforms(aug_cfg) -> Tuple[transforms.Compose, transforms.Compose]:
     """
     Get transforms for train and test.
 
@@ -68,34 +147,7 @@ def get_train_test_transforms():
     Normalization is conducted according to ImageNet statistics.
     This choice allows us to explore transfer learning.
     """
-    train_transforms = transforms.Compose(
-        [
-            transforms.RandomResizedCrop(
-                224,
-                scale=(0.80, 1.0),
-                ratio=(0.9, 1.1),
-            ),
-            transforms.RandomHorizontalFlip(),
-            transforms.RandomVerticalFlip(),
-            transforms.RandomRotation(degrees=20),
-            transforms.RandomAffine(
-                degrees=0,
-                translate=(0.05, 0.05),
-                scale=(0.95, 1.05),
-                shear=5,
-            ),
-            # Mild color changes (ISIC-safe)
-            transforms.ColorJitter(
-                brightness=0.1,
-                contrast=0.1,
-                saturation=0.05,
-                hue=0.02,
-            ),
-            transforms.ToTensor(),
-            transforms.Normalize(mean=IMAGENET_MEAN, std=IMAGENET_STD),
-            transforms.RandomErasing(p=0.25, scale=(0.02, 0.10), ratio=(0.3, 3.3)),
-        ]
-    )
+    train_transforms = build_transforms(aug_cfg)
 
     test_transforms = transforms.Compose(
         [
@@ -109,6 +161,7 @@ def get_train_test_transforms():
 
 
 def get_train_val_dataloaders(
+    aug_cfg: dict,
     batch_size: int = 128,
     num_workers: int = 4,
 ) -> Tuple[DataLoader, DataLoader]:
@@ -130,7 +183,7 @@ def get_train_val_dataloaders(
     train_df = pd.read_csv(train_csv)
     val_df = pd.read_csv(val_csv)
 
-    train_transforms, test_transforms = get_train_test_transforms()
+    train_transforms, test_transforms = get_train_test_transforms(aug_cfg=aug_cfg)
 
     root = DATA_PATH
 

@@ -8,7 +8,9 @@ training:
   warmup_epochs: 5
   max_epochs: 50
   grad_accum: 2
+  fbeta_beta: 2
 
 data:
+  aug_cfg_path: ./configs/aug.yaml
   batch_size: 256
   num_workers: 4

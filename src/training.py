@@ -3,10 +3,19 @@ import math
 import pytorch_lightning as pl
 import torch
 import torch.nn as nn
-from sklearn.metrics import balanced_accuracy_score
+from sklearn.metrics import (
+    accuracy_score,
+    balanced_accuracy_score,
+    precision_score,
+    recall_score,
+    f1_score,
+    fbeta_score,
+    confusion_matrix
+)
 from torch.optim import AdamW
 from torch.optim.lr_scheduler import LambdaLR
-
+import matplotlib.pyplot as plt
+import seaborn as sns
 
 class MelanomaLitModule(pl.LightningModule):
     """
@@ -32,6 +41,8 @@ class MelanomaLitModule(pl.LightningModule):
         self.val_preds = []
         self.val_targets = []
 
+        self.beta = config.get("fbeta_beta", 2)
+
     def forward(self, x):
         return self.model(x)
 
@@ -52,10 +63,35 @@ class MelanomaLitModule(pl.LightningModule):
         preds = torch.cat(self.train_preds).numpy()
         targets = torch.cat(self.train_targets).numpy()
 
+        # -------- METRICS --------
+        acc = accuracy_score(targets, preds)
         bal_acc = balanced_accuracy_score(targets, preds)
+        precision = precision_score(targets, preds, zero_division=0)
+        recall = recall_score(targets, preds, zero_division=0)
+        f1 = f1_score(targets, preds, zero_division=0)
+        fbeta = fbeta_score(targets, preds, beta=self.beta, zero_division=0)
 
+        # -------- LOGGING --------
+        self.log("train_acc", acc)
         self.log("train_bal_acc", bal_acc, prog_bar=True)
+        self.log("train_precision", precision)
+        self.log("train_recall", recall)
+        self.log("train_f1", f1)
+        self.log("train_fbeta", fbeta)
 
+        # -------- CONFUSION MATRIX --------
+        cm = confusion_matrix(targets, preds)
+
+        fig = plt.figure(figsize=(4, 4))
+        sns.heatmap(cm, annot=True, fmt="d", cmap="Blues")
+        plt.xlabel("Predicted")
+        plt.ylabel("True")
+        plt.title("Train Confusion Matrix")
+
+        self.logger.experiment.add_figure("train_confusion_matrix", fig, self.current_epoch)
+        plt.close(fig)
+
+        # -------- CLEAN UP --------
         self.train_preds.clear()
         self.train_targets.clear()
 
@@ -75,9 +111,36 @@ class MelanomaLitModule(pl.LightningModule):
         preds = torch.cat(self.val_preds).numpy()
         targets = torch.cat(self.val_targets).numpy()
 
+        # -------- METRICS --------
+        acc = accuracy_score(targets, preds)
         bal_acc = balanced_accuracy_score(targets, preds)
-        self.log("val_bal_acc", bal_acc, prog_bar=True)
+        precision = precision_score(targets, preds, zero_division=0)
+        recall = recall_score(targets, preds, zero_division=0)
+        f1 = f1_score(targets, preds, zero_division=0)
+        fbeta = fbeta_score(targets, preds, beta=self.beta, zero_division=0)
 
+        # -------- LOGGING --------
+        self.log("val_acc", acc)
+        self.log("val_bal_acc", bal_acc, prog_bar=True)
+        self.log("val_precision", precision)
+        self.log("val_recall", recall)
+        self.log("val_f1", f1)
+        self.log("val_fbeta", fbeta)
+
+        # -------- CONFUSION MATRIX --------
+        cm = confusion_matrix(targets, preds)
+
+        fig = plt.figure(figsize=(4, 4))
+        sns.heatmap(cm, annot=True, fmt="d", cmap="Blues")
+        plt.xlabel("Predicted")
+        plt.ylabel("True")
+        plt.title("Confusion Matrix")
+
+        # Loga a imagem no TensorBoard
+        self.logger.experiment.add_figure("val_confusion_matrix", fig, self.current_epoch)
+        plt.close(fig)
+
+        # -------- CLEAN UP --------
         self.val_preds.clear()
         self.val_targets.clear()
 
