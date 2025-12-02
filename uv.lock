@@ -944,11 +944,6 @@ dependencies = [
     { name = "torchvision" },
 ]
 
-[package.dev-dependencies]
-dev = [
-    { name = "mdc-melanoma-tbdt" },
-]
-
 [package.metadata]
 requires-dist = [
     { name = "ipykernel", specifier = ">=7.1.0" },
@@ -963,9 +958,6 @@ requires-dist = [
     { name = "torch", specifier = ">=2.9.1" },
     { name = "torchvision", specifier = ">=0.24.1" },
 ]
-
-[package.metadata.requires-dev]
-dev = [{ name = "mdc-melanoma-tbdt", virtual = "." }]
 
 [[package]]
 name = "mpmath"

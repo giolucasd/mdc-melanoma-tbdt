@@ -46,6 +46,12 @@ After installing the dependencies, activate the virtual environment created by *
 source .venv/bin/activate
 ```
 
+And install the project itself with:
+
+```bash
+uv pip install -e .
+```
+
 ## 3. Using `mdc-melanoma-tbdt`
 
 ### 3.1. Downloading the data
@@ -81,7 +87,7 @@ This script wraps the full training pipeline:
 > NOTE: other scripts will also do that, but we won't keep repeting it.
 
 ```bash
-python -m scripts.baseline_train \
+python -m scripts.train \
   --config configs/baseline.yaml \
   --output-suffix baseline_v1
 ```
