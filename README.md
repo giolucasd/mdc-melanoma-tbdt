@@ -110,3 +110,10 @@ tensorboard --logdir outputs/baseline_v1/tensorboard
 ```
 
 Note that you can create multiple config files and reuse the same CLI. This will be even more helpful when using configurable models.
+
+### 3.2. Testing models
+To test a model and create the csv file to submit on Kaggle, run the following command changing the arguments to the ones of your trained model.
+
+```bash
+python -m scripts.test --config outputs/pretrained_efficientnet_v1/config.yaml --checkpoint outputs/pretrained_efficientnet_v1/best.ckpt --output-csv outputs/pretrained_efficientnet_v1/test-submission-file.csv
+```

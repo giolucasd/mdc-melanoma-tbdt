@@ -17,6 +17,45 @@ from torch.optim.lr_scheduler import LambdaLR
 import matplotlib.pyplot as plt
 import seaborn as sns
 
+
+import torch
+import torch.nn as nn
+import torch.nn.functional as F
+
+
+class FocalLoss(nn.Module):
+    def __init__(self, alpha=0.25, gamma=2, reduction='mean'):
+        super().__init__()
+        self.alpha = alpha
+        self.gamma = gamma
+        self.reduction = reduction
+
+    def forward(self, logits, targets):
+        # logits: raw model outputs (no sigmoid)
+        # targets: {0,1} labels
+
+        bce = F.binary_cross_entropy_with_logits(
+            logits, targets, reduction='none'
+        )
+        
+        # p = sigmoid(logits)
+        p = torch.sigmoid(logits)
+
+        # focal weight
+        pt = p * targets + (1 - p) * (1 - targets)
+        focal_weight = self.alpha * (1 - pt) ** self.gamma
+        # bce = - torch.log(pt)
+
+        loss = focal_weight * bce
+
+        if self.reduction == 'mean':
+            return loss.mean()
+        elif self.reduction == 'sum':
+            return loss.sum()
+        else:
+            return loss
+
+
 class MelanomaLitModule(pl.LightningModule):
     """
     Model agnostic LightningModule for melanoma classification.
@@ -35,9 +74,12 @@ class MelanomaLitModule(pl.LightningModule):
 
         if config.get("loss_fn") == "BCEWithLogitsLoss":
             self.loss_fn = nn.BCEWithLogitsLoss(
-                pos_weight=torch.tensor([config.get("pos_weight", 1.0)]))
+                pos_weight=torch.tensor([config.get("bce_pos_weight", 1.0)]))
         elif config.get("loss_fn") == "FocalLoss":
-            raise NotImplementedError("FocalLoss not implemented yet.")
+            self.loss_fn = FocalLoss(
+                alpha=config.get("focal_alpha", 0.25),
+                gamma=config.get("focal_gamma", 2.0),
+            )
         else:
             raise ValueError(f"Unsupported loss function: {config.get('loss_fn')}")
 
@@ -150,6 +192,11 @@ class MelanomaLitModule(pl.LightningModule):
         self.val_preds.clear()
         self.val_targets.clear()
 
+    def predict_step(self, batch, batch_idx):
+        images, ids = batch
+        logits = self(images).squeeze(1)
+        return {"logits": logits, "ids": ids}
+    
     def configure_optimizers(self):
         learning_rate = self.hparams.get("learning_rate", 1e-3)
         weight_decay = self.hparams.get("weight_decay", 1e-4)
