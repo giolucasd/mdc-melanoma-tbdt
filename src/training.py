@@ -67,13 +67,14 @@ class MelanomaLitModule(pl.LightningModule):
         self.save_hyperparameters(config)
 
         if config.get("loss_fn") == "BCEWithLogitsLoss":
-            self.loss_fn = nn.BCEWithLogitsLoss(
-                pos_weight=torch.tensor([config.get("bce_pos_weight", 1.0)])
-            )
+            pos_weight = float(config.get("bce_pos_weight", 1.0))
+            self.loss_fn = nn.BCEWithLogitsLoss(pos_weight=torch.tensor([pos_weight]))
         elif config.get("loss_fn") == "FocalLoss":
+            focal_alpha = float(config.get("focal_alpha", 0.25))
+            focal_gamma = float(config.get("focal_gamma", 2.0))
             self.loss_fn = FocalLoss(
-                alpha=config.get("focal_alpha", 0.25),
-                gamma=config.get("focal_gamma", 2.0),
+                alpha=focal_alpha,
+                gamma=focal_gamma,
             )
         else:
             raise ValueError(f"Unsupported loss function: {config.get('loss_fn')}")
@@ -84,7 +85,7 @@ class MelanomaLitModule(pl.LightningModule):
         self.val_preds = []
         self.val_targets = []
 
-        self.beta = config.get("fbeta_beta", 2)
+        self.beta = float(config.get("fbeta_beta", 2))
 
     def forward(self, x):
         return self.model(x)
