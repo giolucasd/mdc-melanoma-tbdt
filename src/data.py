@@ -29,6 +29,7 @@ class MelanomaDataset(Dataset):
         transform=None,
         path_column: str = "path",
         target_column: str = "target",
+        test_mode: bool = False,
     ):
         self.df = df.reset_index(drop=True)
         self.root_dir = Path(root_dir)
@@ -37,6 +38,8 @@ class MelanomaDataset(Dataset):
 
         self.path_column = path_column
         self.target_column = target_column
+
+        self.test_mode = test_mode
 
         assert pd.api.types.is_integer_dtype(self.df[self.target_column])
 
@@ -53,6 +56,9 @@ class MelanomaDataset(Dataset):
 
         if self.transform:
             img = self.transform(img)
+
+        if self.test_mode:
+            return img, row[self.path_column]
 
         return img, label
 
@@ -149,11 +155,14 @@ def get_train_test_transforms(aug_cfg) -> Tuple[transforms.Compose, transforms.C
     """
     train_transforms = build_transforms(aug_cfg)
 
+    norm_cfg = aug_cfg.get("normalize", {})
     test_transforms = transforms.Compose(
         [
             transforms.Resize((224, 224)),
             transforms.ToTensor(),
-            transforms.Normalize(mean=IMAGENET_MEAN, std=IMAGENET_STD),
+            transforms.Normalize(
+                mean=norm_cfg.get("mean", IMAGENET_MEAN), 
+                std=norm_cfg.get("std", IMAGENET_STD)),
         ]
     )
 
@@ -209,6 +218,7 @@ def get_train_val_dataloaders(
 
 
 def get_test_dataloader(
+    aug_cfg: dict,
     batch_size: int = 128,
     num_workers: int = 4,
 ) -> Tuple[DataLoader, DataLoader]:
@@ -226,7 +236,7 @@ def get_test_dataloader(
 
     test_df = pd.read_csv(test_csv)
 
-    _, test_transforms = get_train_test_transforms()
+    _, test_transforms = get_train_test_transforms(aug_cfg=aug_cfg)
 
     root = DATA_PATH
 
@@ -236,12 +246,13 @@ def get_test_dataloader(
         transform=test_transforms,
         path_column="ID",
         target_column="TARGET",
+        test_mode=True,
     )
 
     test_loader = DataLoader(
         test_ds,
         batch_size=batch_size,
-        shuffle=True,
+        shuffle=False,
         num_workers=num_workers,
         pin_memory=True,
     )
