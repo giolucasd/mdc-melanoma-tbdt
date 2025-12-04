@@ -64,6 +64,16 @@ def extract_curve(
     return xs, ys
 
 
+def extract_first_available_curve(
+    scalars: Dict[str, List[Tuple[int, float]]], tags: List[str]
+) -> Tuple[List[int], List[float]]:
+    for t in tags:
+        xs, ys = extract_curve(scalars, t)
+        if xs:
+            return xs, ys
+    return [], []
+
+
 def find_best_step(
     val_loss_steps: List[int], val_loss_values: List[float]
 ) -> Optional[int]:
@@ -195,10 +205,18 @@ def main() -> None:
         figures = load_figures(tb_dir)
 
         run_data = {
-            "train_loss": extract_curve(scalars, "train_loss"),
-            "val_loss": extract_curve(scalars, "val_loss"),
-            "train_bal_acc": extract_curve(scalars, "train_bal_acc"),
-            "val_bal_acc": extract_curve(scalars, "val_bal_acc"),
+            "train_loss": extract_first_available_curve(
+                scalars, ["train_loss", "train_loss_step", "train_loss_epoch"]
+            ),
+            "val_loss": extract_first_available_curve(
+                scalars, ["val_loss", "val_loss_step", "val_loss_epoch"]
+            ),
+            "train_bal_acc": extract_first_available_curve(
+                scalars, ["train_bal_acc", "train_bal_acc_step", "train_bal_acc_epoch"]
+            ),
+            "val_bal_acc": extract_first_available_curve(
+                scalars, ["val_bal_acc", "val_bal_acc_step", "val_bal_acc_epoch"]
+            ),
         }
 
         runs[suffix] = run_data
