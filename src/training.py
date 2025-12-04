@@ -1,30 +1,26 @@
 import math
 
-import pytorch_lightning as pl
-import torch
-import torch.nn as nn
-from sklearn.metrics import (
-    accuracy_score,
-    balanced_accuracy_score,
-    precision_score,
-    recall_score,
-    f1_score,
-    fbeta_score,
-    confusion_matrix
-)
-from torch.optim import AdamW
-from torch.optim.lr_scheduler import LambdaLR
 import matplotlib.pyplot as plt
+import pytorch_lightning as pl
 import seaborn as sns
-
-
 import torch
 import torch.nn as nn
 import torch.nn.functional as F
+from sklearn.metrics import (
+    accuracy_score,
+    balanced_accuracy_score,
+    confusion_matrix,
+    f1_score,
+    fbeta_score,
+    precision_score,
+    recall_score,
+)
+from torch.optim import AdamW
+from torch.optim.lr_scheduler import LambdaLR
 
 
 class FocalLoss(nn.Module):
-    def __init__(self, alpha=0.25, gamma=2, reduction='mean'):
+    def __init__(self, alpha=0.25, gamma=2, reduction="mean"):
         super().__init__()
         self.alpha = alpha
         self.gamma = gamma
@@ -34,10 +30,8 @@ class FocalLoss(nn.Module):
         # logits: raw model outputs (no sigmoid)
         # targets: {0,1} labels
 
-        bce = F.binary_cross_entropy_with_logits(
-            logits, targets, reduction='none'
-        )
-        
+        bce = F.binary_cross_entropy_with_logits(logits, targets, reduction="none")
+
         # p = sigmoid(logits)
         p = torch.sigmoid(logits)
 
@@ -48,9 +42,9 @@ class FocalLoss(nn.Module):
 
         loss = focal_weight * bce
 
-        if self.reduction == 'mean':
+        if self.reduction == "mean":
             return loss.mean()
-        elif self.reduction == 'sum':
+        elif self.reduction == "sum":
             return loss.sum()
         else:
             return loss
@@ -74,7 +68,8 @@ class MelanomaLitModule(pl.LightningModule):
 
         if config.get("loss_fn") == "BCEWithLogitsLoss":
             self.loss_fn = nn.BCEWithLogitsLoss(
-                pos_weight=torch.tensor([config.get("bce_pos_weight", 1.0)]))
+                pos_weight=torch.tensor([config.get("bce_pos_weight", 1.0)])
+            )
         elif config.get("loss_fn") == "FocalLoss":
             self.loss_fn = FocalLoss(
                 alpha=config.get("focal_alpha", 0.25),
@@ -136,7 +131,11 @@ class MelanomaLitModule(pl.LightningModule):
         plt.ylabel("True")
         plt.title("Train Confusion Matrix")
 
-        self.logger.experiment.add_figure("train_confusion_matrix", fig, self.current_epoch)
+        self.logger.experiment.add_figure(
+            "train_confusion_matrix",
+            fig,
+            self.current_epoch,
+        )
         plt.close(fig)
 
         # -------- CLEAN UP --------
@@ -185,7 +184,11 @@ class MelanomaLitModule(pl.LightningModule):
         plt.title("Confusion Matrix")
 
         # Loga a imagem no TensorBoard
-        self.logger.experiment.add_figure("val_confusion_matrix", fig, self.current_epoch)
+        self.logger.experiment.add_figure(
+            "val_confusion_matrix",
+            fig,
+            self.current_epoch,
+        )
         plt.close(fig)
 
         # -------- CLEAN UP --------
@@ -196,12 +199,12 @@ class MelanomaLitModule(pl.LightningModule):
         images, ids = batch
         logits = self(images).squeeze(1)
         return {"logits": logits, "ids": ids}
-    
+
     def configure_optimizers(self):
-        learning_rate = self.hparams.get("learning_rate", 1e-3)
-        weight_decay = self.hparams.get("weight_decay", 1e-4)
-        warmup_epochs = self.hparams.get("warmup_epochs", 5)
-        max_epochs = self.hparams.get("max_epochs", 50)
+        learning_rate = float(self.hparams.get("learning_rate", 1e-3))
+        weight_decay = float(self.hparams.get("weight_decay", 1e-4))
+        warmup_epochs = int(self.hparams.get("warmup_epochs", 5))
+        max_epochs = int(self.hparams.get("max_epochs", 50))
 
         optimizer = AdamW(
             self.model.parameters(),
