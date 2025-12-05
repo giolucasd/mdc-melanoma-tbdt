@@ -3,11 +3,13 @@ import torch
 from src.models.baseline import MelanomaBaselineCNN
 from src.models.custom import CustomResNet
 from src.models.efficientnet import EfficientNetWrapper
+from src.models.resnet import ResNet50Wrapper
 
 MODEL_REGISTRY = {
     "baseline_cnn": MelanomaBaselineCNN,
     "custom_resnet": CustomResNet,
     "efficientnet_b0": EfficientNetWrapper,
+    "resnet50": ResNet50Wrapper,
 }
 
 

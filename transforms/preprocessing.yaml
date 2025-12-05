@@ -1,33 +1,33 @@
 crop:
-  enabled: true
+  enabled: false
   scale: [0.80, 1.0]
   ratio: [0.9, 1.1]
 
 flip:
-  enabled: true
-  horizontal: true
-  vertical: true
+  enabled: false
+  horizontal: false
+  vertical: false
 
 rotate:
-  enabled: true
+  enabled: false
   degrees: 20
 
 affine:
-  enabled: true
+  enabled: false
   degrees: 0
   translate: [0.05, 0.05]
   scale: [0.95, 1.05]
   shear: 5
 
 color:
-  enabled: true
+  enabled: false
   brightness: 0.1
   contrast: 0.1
   saturation: 0.05
   hue: 0.02
 
 cutout:
-  enabled: true
+  enabled: false
   p: 0.25
   scale: [0.02, 0.10]
   ratio: [0.3, 3.3]

@@ -12,6 +12,8 @@ Final project for Mineração de Dados Complexos course from group The Big Data 
 - [3. Using `mdc-melanoma-tbdt`](#3-using-mdc-melanoma-tbdt)
   - [3.1. Downloading the data](#31-downloading-the-data)
   - [3.2. Training baseline](#32-training-baseline)
+  - [3.3. Testing models](#33-testing-models)
+  - [3.4. Report training and validation](#34-report-training-and-validation)
 
 ## 1. Prerequisites
 
@@ -111,9 +113,19 @@ tensorboard --logdir outputs/baseline_v1/tensorboard
 
 Note that you can create multiple config files and reuse the same CLI. This will be even more helpful when using configurable models.
 
-### 3.2. Testing models
+### 3.3. Testing models
+
 To test a model and create the csv file to submit on Kaggle, run the following command changing the arguments to the ones of your trained model.
 
 ```bash
 python -m scripts.test --config outputs/pretrained_efficientnet_v1/config.yaml --checkpoint outputs/pretrained_efficientnet_v1/best.ckpt --output-csv outputs/pretrained_efficientnet_v1/test-submission-file.csv
 ```
+### 3.4. Report training and validation
+
+To report best metrics and training progress after a multistage training use:
+
+```py
+python -m scripts.report --output-suffixes efficientnet_frozen,efficientnet_full
+```
+
+Where efficientnet_frozen and efficientnet_full are, for example, a 2 stage training process of your efficientnet model.
