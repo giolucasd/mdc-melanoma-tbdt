@@ -127,7 +127,7 @@ class MelanomaLitModule(pl.LightningModule):
         cm = confusion_matrix(targets, preds, normalize="true")
 
         fig = plt.figure(figsize=(4, 4))
-        sns.heatmap(cm, annot=True, fmt="d", cmap="Blues")
+        sns.heatmap(cm, annot=True, fmt=".2f", cmap="Blues", vmin=0.0, vmax=1.0)
         plt.xlabel("Predicted")
         plt.ylabel("True")
         plt.title("Train Confusion Matrix")
@@ -179,7 +179,7 @@ class MelanomaLitModule(pl.LightningModule):
         cm = confusion_matrix(targets, preds, normalize="true")
 
         fig = plt.figure(figsize=(4, 4))
-        sns.heatmap(cm, annot=True, fmt="d", cmap="Blues")
+        sns.heatmap(cm, annot=True, fmt=".2f", cmap="Blues", vmin=0.0, vmax=1.0)
         plt.xlabel("Predicted")
         plt.ylabel("True")
         plt.title("Confusion Matrix")
