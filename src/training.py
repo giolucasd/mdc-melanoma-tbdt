@@ -124,7 +124,7 @@ class MelanomaLitModule(pl.LightningModule):
         self.log("train_fbeta", fbeta)
 
         # -------- CONFUSION MATRIX --------
-        cm = confusion_matrix(targets, preds)
+        cm = confusion_matrix(targets, preds, normalize="true")
 
         fig = plt.figure(figsize=(4, 4))
         sns.heatmap(cm, annot=True, fmt="d", cmap="Blues")
@@ -176,7 +176,7 @@ class MelanomaLitModule(pl.LightningModule):
         self.log("val_fbeta", fbeta)
 
         # -------- CONFUSION MATRIX --------
-        cm = confusion_matrix(targets, preds)
+        cm = confusion_matrix(targets, preds, normalize="true")
 
         fig = plt.figure(figsize=(4, 4))
         sns.heatmap(cm, annot=True, fmt="d", cmap="Blues")

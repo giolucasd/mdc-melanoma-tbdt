@@ -75,7 +75,7 @@ This script will automatically download the zip file into the "data/" directory,
 
 ### 3.2. Training baseline
 
-After downloading the data, you can train the baseline CNN using the CLI script provided in `scripts/baseline_train`.
+After downloading the data, you can train the baseline CNN using the CLI script provided in `scripts/train`.
 
 This script wraps the full training pipeline:
 - setup reproducibility and deterministic behavior
