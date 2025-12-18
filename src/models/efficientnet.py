@@ -65,5 +65,5 @@ class EfficientNetWrapper(BaseModel):
 
         print(
             f"Unfroze last {n_blocks} feature blocks "
-            f"({total_blocks - n_blocks} → {total_blocks - 1})."
+            f"out of {total_blocks} total blocks."
         )
