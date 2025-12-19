@@ -4,12 +4,16 @@ from src.models.baseline import MelanomaBaselineCNN
 from src.models.custom import CustomResNet
 from src.models.efficientnet import EfficientNetWrapper
 from src.models.resnet import ResNet50Wrapper
+from src.models.convnext import ConvNeXtV2Wrapper
+from src.models.effnet_v2 import EfficientNetV2Wrapper
 
 MODEL_REGISTRY = {
     "baseline_cnn": MelanomaBaselineCNN,
     "custom_resnet": CustomResNet,
     "efficientnet_b0": EfficientNetWrapper,
     "resnet50": ResNet50Wrapper,
+    "convnextv2_tiny": ConvNeXtV2Wrapper,
+    "tf_efficientnetv2_s": EfficientNetV2Wrapper,
 }
 
 

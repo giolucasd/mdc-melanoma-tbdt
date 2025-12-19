@@ -75,15 +75,16 @@ def extract_first_available_curve(
 
 
 def find_best_step(
-    val_loss_steps: List[int], val_loss_values: List[float]
+    val_steps: List[int], val_values: List[float], mode: str = "min"
 ) -> Optional[int]:
     """
-    Identify the step with lowest validation loss.
+    Identify the step with the best (min or max) value.
     """
-    if not val_loss_values:
+    if not val_values:
         return None
-    best_idx = min(range(len(val_loss_values)), key=lambda i: val_loss_values[i])
-    return val_loss_steps[best_idx]
+    mode = min if mode == "min" else max
+    best_idx = mode(range(len(val_values)), key=lambda i: val_values[i])
+    return val_steps[best_idx]
 
 
 def get_value_at_step(
@@ -222,8 +223,10 @@ def main() -> None:
         runs[suffix] = run_data
 
         # Identify best step for this run
-        val_loss_x, val_loss_y = run_data["val_loss"]
-        best_step = find_best_step(val_loss_x, val_loss_y)
+        # val_loss_x, val_loss_y = run_data["val_loss"]
+        val_x, val_y = run_data["val_bal_acc"]
+
+        best_step = find_best_step(val_x, val_y, mode="max")
         if best_step is None:
             print(f"    No val_loss found for {suffix}.\n")
             continue
