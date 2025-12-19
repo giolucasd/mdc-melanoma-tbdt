@@ -1,9 +1,9 @@
 model:
-  name: efficientnet_b0
+  name: tf_efficientnetv2_s
   pretrained: true
   freeze_encoder: false
-  unfreeze_encoder_blocks: 0
-  weights_path: outputs/effnet-classic/best.ckpt
+  unfreeze_encoder_blocks: 2
+  weights_path: outputs/effnetv2-classic/best.ckpt
 
 training:
   loss_fn: BCEWithLogitsLoss

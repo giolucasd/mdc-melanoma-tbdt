@@ -86,8 +86,8 @@ def main():
         dirpath=out_dir,
         filename="best",
         save_top_k=1,
-        monitor="val_loss",
-        mode="min",
+        monitor="val_bal_acc",
+        mode="max",
     )
 
     ckpt_last = ModelCheckpoint(
