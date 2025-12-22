@@ -137,3 +137,7 @@ To run GradCAM you will need to set up the global variables ROOT, MODEL_CONFIG_P
 ### 3.6 Plots and Exploratory Data Analysis
 
 Plots used on the presentation and report are available on both notebooks/eda.ipynp and notebooks/model-analysis.ipynb.
+
+## 4. Experiments weights
+
+The weights of the experiments that were done can be found on this link https://drive.google.com/drive/folders/17vbE5ka27omU4XAhcsM5V6YvvchMn-q7?usp=drive_link.
